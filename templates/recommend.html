@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Crop Recommendation - Precision Agriculture{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="form-container animate-fade-in">
+    <h1 style="text-align: center; margin-bottom: 2rem;">Crop Recommendation</h1>
+    <form action="{{ url_for('crop_recommendation_app.recommend') }}" method="post">
+      <div class="form-group">
+        <label for="nitrogen">Nitrogen</label>
+        <input type="number" id="nitrogen" name="nitrogen" step="0.1" required placeholder="Enter Nitrogen content">
+      </div>
+
+      <div class="form-group">
+        <label for="phosphorus">Phosphorus</label>
+        <input type="number" id="phosphorus" name="phosphorus" step="0.1" required
+          placeholder="Enter Phosphorus content">
+      </div>
+
+      <div class="form-group">
+        <label for="potassium">Potassium</label>
+        <input type="number" id="potassium" name="potassium" step="0.1" required placeholder="Enter Potassium content">
+      </div>
+
+      <div class="form-group">
+        <label for="temperature">Temperature (°C)</label>
+        <input type="number" id="temperature" name="temperature" step="0.1" required placeholder="Enter Temperature">
+      </div>
+
+      <div class="form-group">
+        <label for="humidity">Humidity (%)</label>
+        <input type="number" id="humidity" name="humidity" step="0.1" required placeholder="Enter Humidity">
+      </div>
+
+      <div class="form-group">
+        <label for="ph_value">pH Value (0-14)</label>
+        <input type="number" id="ph_value" name="ph_value" step="0.1" required placeholder="Enter pH value">
+      </div>
+
+      <div class="form-group">
+        <label for="rainfall">Rainfall (mm)</label>
+        <input type="number" id="rainfall" name="rainfall" step="0.1" required placeholder="Enter Rainfall">
+      </div>
+
+      <div style="text-align: center; margin-top: 2rem;">
+        <button type="submit" class="btn" style="width: 100%;">Recommend Crop</button>
+      </div>
+    </form>
+    {% if error %}
+    <div
+      style="margin-top: 1.5rem; padding: 1rem; background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; border-radius: 8px; color: #fca5a5; text-align: center;">
+      {{ error }}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

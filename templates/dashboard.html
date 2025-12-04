@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Precision Agriculture{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem;">
+  <h1 style="text-align: center;">Dashboard</h1>
+  <p style="text-align: center; color: #94a3b8; margin-bottom: 3rem;">Welcome to your analytics dashboard!</p>
+
+  <div style="margin-bottom: 4rem;">
+    <h2>Crop Analytics</h2>
+    <div class="dashboard-grid">
+      <div class="dashboard-item">
+        <img src="{{ url_for('static', filename='graph/crop-count.png') }}" alt="Crop Count" onclick="openModal(this)">
+        <p style="margin-top: 0.5rem;">Crop Count</p>
+      </div>
+      <div class="dashboard-item">
+        <img src="{{ url_for('static', filename='graph/crop-properties.png') }}" alt="Crop Properties"
+          onclick="openModal(this)">
+        <p style="margin-top: 0.5rem;">Crop Properties</p>
+      </div>
+      <div class="dashboard-item">
+        <img src="{{ url_for('static', filename='graph/correlation.png') }}" alt="Correlation"
+          onclick="openModal(this)">
+        <p style="margin-top: 0.5rem;">Correlation</p>
+      </div>
+      <div class="dashboard-item">
+        <img src="{{ url_for('static', filename='graph/Feature-distributions.png') }}" alt="Feature Distributions"
+          onclick="openModal(this)">
+        <p style="margin-top: 0.5rem;">Feature Distributions</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-bottom: 4rem;">
+    <h2>Yield Analytics</h2>
+    <div class="dashboard-grid">
+      <div class="dashboard-item">
+        <img src="{{ url_for('static', filename='graph/state-yield.png') }}" alt="State Yield"
+          onclick="openModal(this)">
+        <p style="margin-top: 0.5rem;">State Yield</p>
+      </div>
+      <div class="dashboard-item">
+        <img src="{{ url_for('static', filename='graph/state-total-yield.png') }}" alt="State Total Yield"
+          onclick="openModal(this)">
+        <p style="margin-top: 0.5rem;">State Total Yield</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="imageModal" class="modal" onclick="closeModal()">
+  <span class="close">&times;</span>
+  <img class="modal-content" id="expandedImage">
+  <div id="caption" style="text-align: center; color: white; margin-top: 1rem; font-size: 1.2rem;"></div>
+</div>
+
+<script>
+  function openModal(imgElement) {
+    var modal = document.getElementById("imageModal");
+    var modalImg = document.getElementById("expandedImage");
+    var captionText = document.getElementById("caption");
+
+    modal.style.display = "block";
+    modalImg.src = imgElement.src;
+    captionText.innerHTML = imgElement.alt;
+  }
+
+  function closeModal() {
+    var modal = document.getElementById("imageModal");
+    modal.style.display = "none";
+  }
+</script>
+{% endblock %}

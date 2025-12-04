@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Precision Agriculture - Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container animate-fade-in">
+        <h1>Improving Agriculture, Improving Lives.</h1>
+        <p>Smart Crop Recommendations to Boost Farmers' Profits!</p>
+        <a href="#services" class="btn">Explore Services</a>
+    </div>
+</section>
+
+<section id="about" class="container" style="padding: 4rem 20px;">
+    <h2 style="text-align: center; margin-bottom: 3rem;">About Us</h2>
+    <div class="card" style="display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;">
+        <img src="{{ url_for('static', filename='images/crop.jpeg') }}" alt="Precision Agriculture"
+            style="max-width: 400px; height: auto; border-radius: 8px;">
+        <div style="flex: 1;">
+            <p style="font-size: 1.1rem; color: #cbd5e1;">We utilize the latest in machine and deep learning to help in
+                your farming. Our smart algorithms can indeed analyze, optimize, and increase crop yields, always
+                ensuring healthy plants and a great harvest.</p>
+        </div>
+    </div>
+</section>
+
+<section id="services" class="container" style="padding: 4rem 20px;">
+    <h2 style="text-align: center; margin-bottom: 3rem;">Our Services</h2>
+    <div class="card-grid">
+        <div class="card" style="text-align: center;">
+            <img src="{{ url_for('static', filename='images/crop-icon.jpg') }}" alt="Crop Recommendation">
+            <h3>Crop Recommendation</h3>
+            <p style="margin-bottom: 1.5rem; color: #94a3b8;">Recommendations about the type of crops to be cultivated
+                which is best suited for the respective region.</p>
+            <a href="/crop" class="btn">Crop Recommender</a>
+        </div>
+        <div class="card" style="text-align: center;">
+            <img src="{{ url_for('static', filename='images/fertilizer-icon.jpg') }}" alt="Yield Prediction">
+            <h3>Yield Prediction</h3>
+            <p style="margin-bottom: 1.5rem; color: #94a3b8;">Predict the yield of crops based on the soil and weather
+                conditions.</p>
+            <a href="/yield" class="btn">Yield Predictor</a>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+</script>
+{% endblock %}

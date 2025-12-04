@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Yield Prediction - Precision Agriculture{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="form-container animate-fade-in" style="max-width: 800px;">
+    <h1 style="text-align: center; margin-bottom: 2rem;">Crop Yield Prediction</h1>
+    <form action="{{ url_for('yield_prediction_app.predict') }}" method="post">
+      <div class="card-grid"
+        style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin: 0;">
+
+        <div class="form-group">
+          <label for="crop">Crop <span style="font-size: 0.8rem; color: #94a3b8;">(e.g. Rice, Wheat)</span></label>
+          <input type="text" id="crop" name="crop" required placeholder="Enter Crop Name">
+        </div>
+
+        <div class="form-group">
+          <label for="crop_year">Crop Year <span style="font-size: 0.8rem; color: #94a3b8;">(e.g. 2023)</span></label>
+          <input type="number" id="crop_year" name="crop_year" required placeholder="Enter Year">
+        </div>
+
+        <div class="form-group">
+          <label for="annual_rainfall">Annual Rainfall <span
+              style="font-size: 0.8rem; color: #94a3b8;">(mm/year)</span></label>
+          <input type="number" step="0.01" id="annual_rainfall" name="annual_rainfall" required
+            placeholder="Enter Rainfall">
+        </div>
+
+        <div class="form-group">
+          <label for="pesticide">Pesticide <span style="font-size: 0.8rem; color: #94a3b8;">(tonnes)</span></label>
+          <input type="number" step="0.01" id="pesticide" name="pesticide" required
+            placeholder="Enter Pesticide amount">
+        </div>
+
+        <div class="form-group">
+          <label for="fertilizer">Fertilizer <span style="font-size: 0.8rem; color: #94a3b8;">(tonnes)</span></label>
+          <input type="number" step="0.01" id="fertilizer" name="fertilizer" required
+            placeholder="Enter Fertilizer amount">
+        </div>
+
+        <div class="form-group">
+          <label for="area">Area <span style="font-size: 0.8rem; color: #94a3b8;">(Hectares)</span></label>
+          <input type="text" id="area" name="area" required placeholder="Enter Area">
+        </div>
+
+        <div class="form-group">
+          <label for="state">State <span style="font-size: 0.8rem; color: #94a3b8;">(e.g. Assam)</span></label>
+          <input type="text" id="state" name="state" required placeholder="Enter State">
+        </div>
+
+        <div class="form-group">
+          <label for="season">Season <span style="font-size: 0.8rem; color: #94a3b8;">(e.g. Kharif)</span></label>
+          <input type="text" id="season" name="season" required placeholder="Enter Season">
+        </div>
+
+      </div>
+
+      <div style="text-align: center; margin-top: 2rem;">
+        <button type="submit" class="btn" style="width: 100%; max-width: 300px;">Predict Yield</button>
+      </div>
+    </form>
+
+    {% if prediction %}
+    <div
+      style="margin-top: 2rem; padding: 2rem; background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; border-radius: 12px; text-align: center;">
+      <h2 style="color: #fff; margin-bottom: 0.5rem;">Result</h2>
+      <h3 style="color: #34d399; font-size: 2rem;">{{ prediction }}</h3>
+    </div>
+    {% endif %}
+
+    {% if error %}
+    <div
+      style="margin-top: 2rem; padding: 1rem; background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; border-radius: 8px; color: #fca5a5; text-align: center;">
+      <h3 style="margin: 0;">{{ error }}</h3>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
