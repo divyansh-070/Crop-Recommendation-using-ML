@@ -19,3 +19,6 @@ env/
 dist/
 build/
 *.egg-info/
+
+# Media
+*.mp4
