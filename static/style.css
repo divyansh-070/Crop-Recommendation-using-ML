@@ -55,6 +55,58 @@ button:hover {
     background-color: #0056b3;
 }
 
+/* Button utility class used in templates */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 12px;
+    margin: 0;
+    width: 100%;
+    border-radius: 6px;
+    box-shadow: none;
+    transition: background-color 0.18s ease, transform 0.08s ease;
+}
+.btn:active { transform: translateY(1px); }
+
+/* Geolocation and live buttons have distinct colors (kept in templates inline too) */
+.btn-geo { background: #10b981; color: #fff; }
+.btn-geo:hover { background: #0ea46f; }
+.btn-live { background: #f59e0b; color: #111; }
+.btn-live:hover { background: #d48806; }
+
+/* Suggestions box shown under the form for geolocation results */
+#suggestions-box {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid #e6e9ee;
+    border-radius: 8px;
+    color: #111827;
+    font-size: 15px;
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+/* subtle emphasis when cached/updated */
+#suggestions-box.updated {
+    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.06);
+    border-color: #10b98133;
+}
+
+/* Small layout tweaks */
+.form-container { padding: 24px; }
+.form-group { margin-bottom: 14px; }
+
+@media (max-width: 640px) {
+    .container { margin: 20px; padding: 16px; }
+    .btn { width: 100%; }
+}
+
 .result {
     padding: 20px;
     background: #e6f7ff;

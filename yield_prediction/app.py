@@ -8,8 +8,30 @@ logging.basicConfig(level=logging.DEBUG)
 
 yield_prediction_app = Blueprint('yield_prediction_app', __name__)
 
-dtr = pickle.load(open('Data/dtr.pkl', 'rb'))
-preprocessor = pickle.load(open('Data/preprocessor.pkl', 'rb'))
+# lazy model holders
+dtr = None
+preprocessor = None
+
+def load_yield_models():
+    global dtr, preprocessor
+    if dtr is not None and preprocessor is not None:
+        return True
+    try:
+        dtr_path = os.path.join(os.path.dirname(__file__), '..', 'Data', 'dtr.pkl')
+        pre_path = os.path.join(os.path.dirname(__file__), '..', 'Data', 'preprocessor.pkl')
+        if os.path.exists(dtr_path):
+            with open(dtr_path, 'rb') as f:
+                dtr = pickle.load(f)
+        if os.path.exists(pre_path):
+            with open(pre_path, 'rb') as f:
+                preprocessor = pickle.load(f)
+        if dtr is None or preprocessor is None:
+            logging.error('Yield model or preprocessor not found in Data/.')
+            return False
+        return True
+    except Exception as e:
+        logging.error(f'Error loading yield models lazily: {e}')
+        return False
 
 @yield_prediction_app.route('/')
 def index():
@@ -30,6 +52,10 @@ def predict():
 
             features = pd.DataFrame([[crop, crop_year, season, state, area, annual_rainfall, fertilizer, pesticide]],
                                     columns=['Crop', 'Crop_Year', 'Season', 'State', 'Area', 'Annual_Rainfall', 'Fertilizer', 'Pesticide'])
+
+            # ensure models are loaded lazily
+            if not load_yield_models():
+                return render_template('predict.html', error='Model not loaded. Please train models first.')
 
             transformed_features = preprocessor.transform(features)
 
