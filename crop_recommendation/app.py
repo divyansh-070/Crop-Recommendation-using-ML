@@ -303,6 +303,63 @@ def location_suggest():
     return {"state": state, "crops": crops, "cached": cached_flag}
 
 
+@crop_recommendation_app.route('/recommend-location', methods=['POST'])
+def recommend_location():
+    try:
+        if request.is_json:
+             data = request.get_json()
+             lat = float(data.get('lat'))
+             lon = float(data.get('lon'))
+        else:
+            lat = float(request.form['lat'])
+            lon = float(request.form['lon'])
+    except Exception:
+        return render_template('recommend.html', error="Invalid location data provided.", domain_limits=domain_limits)
+
+    try:
+        # round coordinates
+        lat_r = round(lat, 3)
+        lon_r = round(lon, 3)
+        
+        # cache setup (reusing logic from location_suggest)
+        if requests_cache is not None:
+             try:
+                cache_path = os.path.join(base_dir, 'Data', 'geocode_cache')
+                requests_cache.install_cache(cache_path, backend='sqlite', expire_after=86400)
+             except Exception:
+                pass
+
+        r = requests.get('https://nominatim.openstreetmap.org/reverse', params={
+            'lat': lat_r, 'lon': lon_r, 'format': 'json', 'zoom': 5, 'addressdetails': 1
+        }, headers={'User-Agent': 'EPICS-Agent/1.0'}, timeout=5)
+        r.raise_for_status()
+        payload = r.json()
+        address = payload.get('address', {})
+        
+        # Validate Country
+        country = address.get('country')
+        if country and 'India' not in country:
+             return render_template('recommend.html', error="Location outside India is not supported.", domain_limits=domain_limits)
+
+        mapping_path = os.path.join(os.path.dirname(__file__), 'state_to_crops.json')
+        try:
+            with open(mapping_path, 'r', encoding='utf-8') as f:
+                state_map = json.load(f)
+        except Exception:
+            state_map = {}
+
+        state, crops, matched_key, debug_msgs = match_state_to_crops(address, state_map)
+        
+        if not crops:
+             return render_template('recommendation.html', recommendation="No specific crops mapped for this state yet.", state=state)
+
+        return render_template('recommendation.html', crops=crops, state=state)
+
+    except Exception as e:
+        print(f"Error in recommend_location: {e}")
+        return render_template('recommend.html', error=f"Location processing failed: {e}", domain_limits=domain_limits)
+
+
 @crop_recommendation_app.route('/recommend', methods=['POST'])
 def recommend():
     try:
@@ -327,7 +384,7 @@ def recommend():
         # Validate inputs against dataset-derived bounds
         valid, msg = validate_input(input_values)
         if not valid:
-            return render_template('recommend.html', error=msg)
+            return render_template('recommend.html', error=msg, domain_limits=domain_limits)
 
         # Mahalanobis OOD check (if precomputed data exists)
         # Skip strict Mahalanobis check for inputs that are within domain_limits
@@ -352,7 +409,7 @@ def recommend():
                     diff = x - mu
                     m2 = float(diff.dot(inv_cov).dot(diff))
                     if m2 > threshold:
-                        return render_template('recommend.html', error=f"Input appears out-of-distribution (Mahalanobis={m2:.2f} &gt; {threshold:.2f}). Please adjust inputs.")
+                        return render_template('recommend.html', error=f"Input appears out-of-distribution (Mahalanobis={m2:.2f} &gt; {threshold:.2f}). Please adjust inputs.", domain_limits=domain_limits)
         except Exception as e:
             print('Mahalanobis check failed:', e)
 
@@ -360,16 +417,20 @@ def recommend():
 
         # ensure models are loaded lazily
         if not load_crop_model():
-            return render_template('recommend.html', error="Model not loaded. Please train models first.")
+            return render_template('recommend.html', error="Model not loaded. Please train models first.", domain_limits=domain_limits)
 
-        prediction_encoded = crop_model.predict(input_data)[0]
-        crop_prediction = label_encoder.inverse_transform([prediction_encoded])[0]
-
-        return render_template('recommendation.html', recommendation=crop_prediction)
+        # Get top 3 predictions
+        proba = crop_model.predict_proba(input_data)[0]
+        # Get indices of top 3 probabilities
+        top3_indices = np.argsort(proba)[-3:][::-1]
+        # Transform indices to crop names
+        top3_crops = label_encoder.inverse_transform(top3_indices).tolist()
+        
+        return render_template('recommendation.html', crops=top3_crops, state="your conditions")
 
     except Exception as e:
         print(f"Error during prediction: {e}")
-        return render_template('recommend.html', error="Error during prediction. Please check your inputs.")
+        return render_template('recommend.html', error=f"Error during prediction: {e}", domain_limits=domain_limits)
 
 
 app.register_blueprint(crop_recommendation_app)

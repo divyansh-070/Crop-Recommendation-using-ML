@@ -1,0 +1,4 @@
+Attempting prediction...
+Probabilities shape: (22,)
+Top 3 indices: [20  8 19]
+Top 3 crops: ['Rice' 'Jute' 'Pomegranate']
